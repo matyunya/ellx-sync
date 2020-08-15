@@ -70,10 +70,15 @@ async function sync() {
   const ellxApi = xhr(ellxUrl);
 
   // Check repo visibility, and whether we have the tag already
-  const [meta, ellxTag] = await Promise.all([
-    ghApi.get(`/repos/${repo}`),
-    ghApi.get(`/repos/${repo}/git/matching-refs/tags/${tagName}`)
-  ]);
+  try {
+    const [meta, ellxTag] = await Promise.all([
+      ghApi.get(`/repos/${repo}`),
+      ghApi.get(`/repos/${repo}/git/matching-refs/tags/${tagName}`)
+    ]);
+  } catch (e) {
+    console.log('EEEEERRRORRR', e);
+    throw e;
+  }
 
   const toUpload = await ellxApi.put('/sync/' + repo + suffix, {
     repo,
