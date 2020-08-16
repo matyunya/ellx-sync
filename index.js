@@ -85,7 +85,7 @@ async function sync() {
     tagName,
     currentSha: ellxTag[0] && ellxTag[0].object.sha,
     files
-  });
+  }).catch(core.error);
 
   const uploads = await Promise.all(
     toUpload.map(
@@ -96,7 +96,7 @@ async function sync() {
           'Content-Type': getContentType(path),
           'Cache-Control': 'max-age=31536000' // TODO: fix for private projects
         },
-      })
+      }).catch(core.error)
     )
   );
 
