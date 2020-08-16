@@ -51,6 +51,7 @@ function getContentType(id) {
 }
 
 async function sync() {
+  core.info('RUNNING');
   const repo = process.env.GITHUB_REPOSITORY;
   const targetSha = process.env.GITHUB_SHA;
   const currentRef = process.env.GITHUB_REF;
@@ -64,21 +65,16 @@ async function sync() {
   const files = repoFiles();
 
   const ghApi = xhr(GITHUB_API, {
-    authorization: `Bearer ${ token }`
+    authorization: `Bearer ${token}`
   });
 
   const ellxApi = xhr(ellxUrl);
 
   // Check repo visibility, and whether we have the tag already
-  try {
-    const [meta, ellxTag] = await Promise.all([
-      ghApi.get(`/repos/${repo}`),
-      ghApi.get(`/repos/${repo}/git/matching-refs/tags/${tagName}`)
-    ]);
-  } catch (e) {
-    console.log('EEEEERRRORRR', e);
-    throw e;
-  }
+  const [meta, ellxTag] = await Promise.all([
+    ghApi.get(`/repos/${repo}`),
+    ghApi.get(`/repos/${repo}/git/matching-refs/tags/${tagName}`)
+  ]);
 
   const toUpload = await ellxApi.put('/sync/' + repo + suffix, {
     repo,
